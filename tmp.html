@@ -1,4 +1,3 @@
-None
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -392,26 +391,26 @@ None
 </div>
 </div>
 <div class="cbp-item" style="min-height: 460px">
-    <a class="cbp-caption" href="https://atamer.baskent.edu.tr/kw/duyuru_ayrinti.php?did=160153" target="_blank">
-    <div class="cbp-caption-defaultWrap">
-    <img src="https://www.baskent.edu.tr/upload/images/etkinlikler/30-agustos-thumbnail.png"/>
-    </div>
-    <div class="cbp-caption-activeWrap">
-    <div class="cbp-l-caption-alignCenter">
-    <div class="cbp-l-caption-body">
-    <div class="cbp-l-caption-desc"><i class="ion-android-more-horizontal"></i></div>
-    </div>
-    </div>
-    </div>
-    </a>
-    <div class="category-date">
-    <h4 class="month">AÄUSTOS</h4>
-    <h3 class="day">30</h3>
-    </div>
-    <div class="blog-thumb-desc category-list event-list" style="min-height: 247px">
-    <a class="link-to-post" href="https://www.baskent.edu.tr/tr/etkinlikler/etkinlik/1"><h4>Etkinlik</h4></a>
-    <a class="link-to-post" href="https://atamer.baskent.edu.tr/kw/duyuru_ayrinti.php?did=160153" target="_blank"><h5>30 AÄustos Zafer BayramÄ±</h5></a>
-    </div>
+<a class="cbp-caption" href="https://atamer.baskent.edu.tr/kw/duyuru_ayrinti.php?did=160153" target="_blank">
+<div class="cbp-caption-defaultWrap">
+<img src="https://www.baskent.edu.tr/upload/images/etkinlikler/30-agustos-thumbnail.png"/>
+</div>
+<div class="cbp-caption-activeWrap">
+<div class="cbp-l-caption-alignCenter">
+<div class="cbp-l-caption-body">
+<div class="cbp-l-caption-desc"><i class="ion-android-more-horizontal"></i></div>
+</div>
+</div>
+</div>
+</a>
+<div class="category-date">
+<h4 class="month">AÄUSTOS</h4>
+<h3 class="day">30</h3>
+</div>
+<div class="blog-thumb-desc category-list event-list" style="min-height: 247px">
+<a class="link-to-post" href="https://www.baskent.edu.tr/tr/etkinlikler/etkinlik/1"><h4>Etkinlik</h4></a>
+<a class="link-to-post" href="https://atamer.baskent.edu.tr/kw/duyuru_ayrinti.php?did=160153" target="_blank"><h5>30 AÄustos Zafer BayramÄ±</h5></a>
+</div>
 </div>
 <div class="cbp-item" style="min-height: 460px">
 <a class="cbp-caption" href="https://www.btkakademi.gov.tr/portal/public/ZonguldakSiberGuvenlikveJavaKamp2023" target="_blank">
@@ -869,3 +868,53 @@ None
 </html>
 
 77
+---------------------------------------------------------------------------
+KeyboardInterrupt                         Traceback (most recent call last)
+Cell In[25], line 4
+      2 event_details=[]
+      3 for event in events:
+----> 4     detail=getDetails(event)
+      5     event_details.append(detail)
+      6     print(detail)
+
+Cell In[22], line 4, in getDetails(event)
+      2 image=event.img["src"]
+      3 month=event.find("h4",class_="month").text
+----> 4 day=event.find("h3",class_="day").text
+      5 container=event.find("div",class_="blog-thumb-desc category-list event-list")
+      6 category=container.h4.text
+
+Cell In[22], line 4, in getDetails(event)
+      2 image=event.img["src"]
+      3 month=event.find("h4",class_="month").text
+----> 4 day=event.find("h3",class_="day").text
+      5 container=event.find("div",class_="blog-thumb-desc category-list event-list")
+      6 category=container.h4.text
+
+File c:\Users\eren\AppData\Local\Programs\Python\Python311\Lib\site-packages\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_frame.py:1197, in PyDBFrame.trace_dispatch(self, frame, event, arg)
+   1195 if is_line:
+   1196     self.set_suspend(thread, step_cmd, original_step_cmd=info.pydev_original_step_cmd)
+-> 1197     self.do_wait_suspend(thread, frame, event, arg)
+   1198 elif is_return:  # return event
+   1199     back = frame.f_back
+
+File c:\Users\eren\AppData\Local\Programs\Python\Python311\Lib\site-packages\debugpy\_vendored\pydevd\_pydevd_bundle\pydevd_frame.py:165, in PyDBFrame.do_wait_suspend(self, *args, **kwargs)
+    164 def do_wait_suspend(self, *args, **kwargs):
+--> 165     self._args[0].do_wait_suspend(*args, **kwargs)
+
+File c:\Users\eren\AppData\Local\Programs\Python\Python311\Lib\site-packages\debugpy\_vendored\pydevd\pydevd.py:2070, in PyDB.do_wait_suspend(self, thread, frame, event, arg, exception_type)
+   2067             from_this_thread.append(frame_custom_thread_id)
+   2069     with self._threads_suspended_single_notification.notify_thread_suspended(thread_id, thread, stop_reason):
+-> 2070         keep_suspended = self._do_wait_suspend(thread, frame, event, arg, suspend_type, from_this_thread, frames_tracker)
+   2072 frames_list = None
+   2074 if keep_suspended:
+   2075     # This means that we should pause again after a set next statement.
+
+File c:\Users\eren\AppData\Local\Programs\Python\Python311\Lib\site-packages\debugpy\_vendored\pydevd\pydevd.py:2106, in PyDB._do_wait_suspend(self, thread, frame, event, arg, suspend_type, from_this_thread, frames_tracker)
+   2103         self._call_input_hook()
+   2105     self.process_internal_commands()
+-> 2106     time.sleep(0.01)
+   2108 self.cancel_async_evaluation(get_current_thread_id(thread), str(id(frame)))
+   2110 # process any stepping instructions
+
+KeyboardInterrupt: 
