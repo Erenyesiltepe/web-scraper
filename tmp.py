@@ -1,12 +1,13 @@
-for event in events:
-    date=event.span.text
-    if date!="":
-        date=getTime(date)
+from datetime import datetime
+# for event in events:
+#     date=event.span.text
+#     if date!="":
+#         date=getTime(date)
 
-    alink=event.a["href"]
-    category=
+#     alink=event.a["href"]
+#     category=
     
-    print(alink)
+#     print(alink)
 
 
 def getTime(time_str):

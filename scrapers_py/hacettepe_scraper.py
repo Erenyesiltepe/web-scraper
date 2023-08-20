@@ -1,7 +1,8 @@
 from bs4 import BeautifulSoup
 import requests
+from datetime import datetime
 
-def hacettepe():
+def scrape():
     link="https://etkinlikler.hacettepe.edu.tr/"
     p=requests.get(link).text
 
@@ -11,27 +12,39 @@ def hacettepe():
     event_infos=[]
 
     for haber in habers:
-        ahref=haber.find("a")["href"].replace("\r\n","")
-        detail=requests.get(link+ahref[1::]).text
+        ahref=link+haber.find("a")["href"].replace("\r\n","")[1::]
+        detail=requests.get(ahref).text
         page_obj=BeautifulSoup(detail,"lxml")
         date_and_category=page_obj.find("div",class_="icerik_alt")
         print(date_and_category)
         heading=page_obj.find("div",class_="baslik")
         if heading is not None and date_and_category is not None:
             date_and_category=date_and_category.text.replace(" ","").split("/")
+            date=datetime.strptime(date_and_category[0],"%d.%m.%Y")
             heading=heading.text.replace("\r\n"," ")
-            imglinks=page_obj.find("div",class_="icerik").find_all("img")
+            content=page_obj.find("div",class_="icerik")
+            imglinks=content.find_all("img")
+            p_s=content.findAll("p")
+            description=""
+            for p in p_s:
+                description+=p.text
             images=[]
             for img in imglinks:
                 images.append(img["src"])
 
             event_infos.append(
                 {
-                    "heading":heading,
-                    "date":date_and_category[0],
+                    "name":heading,
+                    "description":description,
+                    "links":ahref,
+                    "form":{},
+                    "start_date":date,
+                    "end_date":date,
+                    "media":images,#list
+                    "qr_code":{},
+                    "verification_link":"",
                     "category":date_and_category[1],
-                    "images":images
                 }
             )
 
-    return {"hacettepe":event_infos}
+    return event_infos
