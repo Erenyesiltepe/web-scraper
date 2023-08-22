@@ -2,26 +2,29 @@
 from bs4 import BeautifulSoup
 import requests
 from datetime import datetime
-
+import re
  
 def getTime(time_str):
     months={
-        "Ocak":1,
-        "Şubat":2,
-        "Mart":3,
-        "Nisan":4,
-        "Mayıs":5,
-        "Haziran":6,
-        "Temmuz":7,
-        "Ağustos":8,
-        "Eylül":9,
-        "Ekim":10,
-        "Kasım":11,
-        "Aralık":12,
+        "OCAK":1,
+        "ŞUBAT":2,
+        "MART":3,
+        "NİSAN":4,
+        "MAYIS":5,
+        "HAZİRAN":6,
+        "TEMMUZ":7,
+        "AĞUSTOS":8,
+        "EYLÜL":9,
+        "EKİM":10,
+        "KASIM":11,
+        "ARALIK":12,
     }
-    day=time_str[0:2]
-    month=time_str[2:-4]
-    year=months[time_str[-4::]]
+    numbers=re.findall(r"\d+",time_str)
+    day=int(numbers[0])
+    month_str=re.findall(r"[^0-9]+",time_str)[0]
+    month=months[month_str.upper()]
+    year=int(numbers[1])
+ 
     return datetime(year,month,day)
 
  
@@ -64,7 +67,6 @@ def get_event_details(link):
             "place":""
             }
 
- 
 def scrape():
     links=get_detail_page_links()
     details=[]
@@ -74,4 +76,4 @@ def scrape():
         )
     return details
 
-
+print(scrape())

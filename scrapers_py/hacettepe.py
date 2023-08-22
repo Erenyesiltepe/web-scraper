@@ -48,3 +48,5 @@ def scrape():
             )
 
     return event_infos
+
+print(scrape())
