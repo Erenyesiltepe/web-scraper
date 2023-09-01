@@ -1,6 +1,0 @@
-1691759776388	geckodriver	INFO	Listening on 127.0.0.1:51905
-1691759778408	webdriver::command	WARN	You are using deprecated legacy session negotiation patterns (desiredCapabilities/requiredCapabilities), see https://developer.mozilla.org/en-US/docs/Web/WebDriver/Capabilities#Legacy
-1691760225816	geckodriver	INFO	Listening on 127.0.0.1:56236
-1691760227860	webdriver::command	WARN	You are using deprecated legacy session negotiation patterns (desiredCapabilities/requiredCapabilities), see https://developer.mozilla.org/en-US/docs/Web/WebDriver/Capabilities#Legacy
-1691760483697	geckodriver	INFO	Listening on 127.0.0.1:54484
-1691760485717	webdriver::command	WARN	You are using deprecated legacy session negotiation patterns (desiredCapabilities/requiredCapabilities), see https://developer.mozilla.org/en-US/docs/Web/WebDriver/Capabilities#Legacy
