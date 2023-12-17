@@ -1,11 +1,18 @@
 from playwright.async_api import async_playwright
 import asyncio
 from datetime import datetime
+import time
 import googlemaps
 
-async def get_category_events(page, category="sinema", city="ankara"):
+async def login(page):
+    await page.goto("https://biletinial.com/tr-tr/WebLogin")
+    await page.get_by_placeholder("E-Mail").fill("metojal303@nasmis.com")
+    await page.get_by_placeholder("Şifre").fill("aA.123456789")
+    await page.locator("button.mt-10").click()
+
+async def get_category_events(page, category="sinema"):
     print("Loading",category)
-    link=f"https://biletinial.com/tr-tr/{category}/{city}"
+    link=f"https://biletinial.com/tr-tr/{category}"
     await page.goto(link,timeout=0)
 
     event_div = await page.query_selector("div#kategori__etkinlikler")
@@ -77,7 +84,7 @@ async def get_event_details(link, category, page, location_page):
         try:
             ifsold = await date.query_selector("div.ed-biletler__sehir__gun__fiyat")
             ifsold = await ifsold.inner_text() 
-            if ifsold[0] != "T":
+            if ifsold[0] == "B":
                 start_date = await date.query_selector("[itemprop='startDate']")
                 start_date = await start_date.get_attribute("content")
                 start_date = datetime.strptime(start_date, "%Y-%m-%dT%H:%M")
@@ -85,15 +92,6 @@ async def get_event_details(link, category, page, location_page):
                 end_date = await end_date.get_attribute("content")
                 end_date = datetime.strptime(end_date, "%Y-%m-%dT%H:%M")
 
-                # latitude = await date.query_selector("[itemprop='latitude']")
-                # latitude = await latitude.get_attribute("content")
-                # longitude=""
-                # try:
-                #     longitude = await date.query_selector("[itemprop='longitude']")
-                #     longitude = await longitude.get_attribute("content")
-                #     longitude = float(longitude)
-                #     latitude = float(latitude)
-                # except:
                 address_part = await date.query_selector("[itemprop='location']")
                 address_title= await address_part.get_attribute("title")
 
@@ -117,37 +115,66 @@ async def get_event_details(link, category, page, location_page):
                         latitude= pre["lat"]
                         longitude= pre["lng"]
                     print("lat:",latitude,"lng:",longitude)
+                    desc=desc+"\n"+rules
+                    desc=desc.replace("\xa0","").replace("\n\n","\n")
                     events.append(
                     {
                         "name":heading,
-                        "description":desc+"\n"+rules,
-                        "links":{"link"},
-                        "start_date":start_date,
-                        "end_date":end_date,
-                        "media":{img_link},
+                        "description":desc,
+                        "links":["link"],
+                        "start_date":start_date.strftime("%d-%m-%Y %H:%M"),
+                        "end_date":end_date.strftime("%d-%m-%Y %H:%M"),
+                        "media":[img_link],
                         "latitude":latitude,
                         "longitude":longitude,
                         "category":category.lower()
+                        #place
+                        #dateandplace=[{place= lat long date}]
                     }
                     )
+                    
                 except:
                     print("Event location could not found:",address_title)
         except:
             print("Event dates could not found")
-
+  #  print(events)
     print("event is completed")
     return events
 
+async def get_price(page):
+    ticket_details=[]
+    tickets=await page.locator("div.yn_koltuksuz__bilet").all()# no seats
+    if tickets is None:
+        tickets = await page.locator("div.prices item").all()
+        for ticket in tickets:
+            type= ticket.locator("small")
+            type=await type.inner_text()
+            price=ticket.locator("strong")
+            price=await ticket.inner_text()
+            price=float(price.strip()[::-2].replace(",","."))
+            print(price," ",type)
+    else:
+        for ticket in tickets:
+            type=  ticket.locator("h5")
+            type=await type.inner_text()
+            price= ticket.locator("strong")
+            price=await price.inner_text()
+            price=float(price[1::].replace(",","."))
+            ticket_details.append({"type":type,"price":price})
+    return ticket_details
 
 async def main():
     async with async_playwright() as p:
-        browser = await p.chromium.launch()
-        page = await browser.new_page()
-        location_page = await browser.new_page()
+        cur= datetime.now()
 
-        events_details=[]
-        categories=["muzik", "tiyatro","opera-bale","gosteri","egitim","seminer","etkinlik","eglence"]
-        #sinema, spor, stand-up
+        browser = await p.chromium.launch(headless=False)
+        page = await browser.new_page()
+        #location_page = await browser.new_page()
+        await login(page)
+
+        """   events_details=[]
+        
+        categories=["muzik", "tiyatro","opera-bale"]
         for cat in categories:
             event_links=await get_category_events(page, cat)
             for event_link in event_links:
@@ -162,10 +189,26 @@ async def main():
         for event_link in event_links:
             events_details.extend(await get_event_details(event_link,"stand-up",page, location_page))
 
+        import json
+        with open("biletinial_event_details.json", 'w',encoding="UTF-8") as json_file:
+            json.dump(events_details, json_file)
+
+        next= datetime.now()
+        dif=next-cur
+        print(dif.total_seconds()/60) """
+        
+        
+        """ await page.goto("https://biletinial.com/tr-tr/muzik/jay-jay-johanson")
+        button=await page.query_selector("button.seanceSelect")
+        await button.click() """
+        await page.goto("https://biletinial.com/tr-tr/sinema/napolyon")
+        await page.locator("div.yn_cinema button").first.click()
+        await get_price(page)
+
         # Close the browser when you're done with it
         await browser.close()
 
 
-# Run the async main function
+# Run the async main functionz
 gmaps = googlemaps.Client(key='AIzaSyACez1e0MXMj2eZCPcg7qXsZ3CgDvSofL4')
 asyncio.run(main())

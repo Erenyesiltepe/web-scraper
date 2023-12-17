@@ -146,10 +146,10 @@ async def get_event_details(link, category, page):
     return [{
         "name":heading,
         "description":details,
-        "links":{link},
-        "start_date":getTime(start_date),
-        "end_date":getTime(end_date),
-        "media":{img},
+        "links":[link],
+        "start_date":getTime(start_date).strftime("%d-%m-%Y %H:%M"),
+        "end_date":getTime(end_date).strftime("%d-%m-%Y %H:%M"),
+        "media":[img],
         "latitude":lat,
         "longitude":lng,
         "category":category.lower()
@@ -157,6 +157,8 @@ async def get_event_details(link, category, page):
 
 async def main():
     async with async_playwright() as p:
+        cur= datetime.now()
+
         browser = await p.chromium.launch()
         page = await browser.new_page()
 
@@ -170,13 +172,15 @@ async def main():
                 print(i, event_link)
                 event=await get_event_details(event_link,cat,page)
                 event_details.extend(event)
-        try:
-            import json
-            with open("event_details.json", 'w') as json_file:
-                json.dump(event_details, json_file)
-        except:
-            for a in event_details:
-                print(a)
+
+        import json
+        with open("biletix_event_details.json", 'w',encoding="UTF-8") as json_file:
+            json.dump(event_details, json_file)
+        
+        next= datetime.now()
+        dif=next-cur
+        print(dif.total_seconds()/60)
+ 
         # Close the browser when you're done with it
         await browser.close()
 
