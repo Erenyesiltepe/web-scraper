@@ -9,12 +9,8 @@
       "name": "",
       "lat": 0,
       "long": 0,
-      "dates": [
-        {
-          "start_time": "%d-%m-%Y %H:%M",
-          "end_time": "%d-%m-%Y %H:%M"
-        }
-      ],
+      "start_time": "%d-%m-%Y %H:%M",
+      "end_time": "%d-%m-%Y %H:%M",
       "vendors": [
         {
           "name": "biletix",
