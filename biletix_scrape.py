@@ -3,7 +3,22 @@ import asyncio
 from bs4 import BeautifulSoup
 from datetime import datetime
 import googlemaps
+from urllib.parse import urlparse, parse_qs
+def get_place(link):
+     # Parse the URL
+    parsed_url = urlparse(link)
 
+    # Extract the query parameters
+    query_params = parse_qs(parsed_url.query)
+
+    # Extract the latitude and longitude
+    if 'q' in query_params:
+        coordinates = query_params['q'][0].split(',')
+        latitude = float(coordinates[0])
+        longitude = float(coordinates[1])
+        return latitude, longitude
+    else:
+        return None  
 def getTime(time_str):
     months={
         "Oca":1,
