@@ -124,7 +124,8 @@ async def get_event_details(link, category, page):
         print("place:",place,"lat:",lat,"lng:",lng)
     except:
         print("place could not be found")
-        return [] """
+        return [] 
+    """
 
     try:
         time_elements = await page.query_selector_all("div.perf-date.ng-star-inserted span")
