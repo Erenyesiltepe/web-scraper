@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 import googlemaps
 from urllib.parse import urlparse, parse_qs
+
 def get_place(link):
      # Parse the URL
     parsed_url = urlparse(link)
@@ -44,7 +45,6 @@ def getTime(time_str):
 
 async def load_category(category, city, page):
         #got to the url
-        # page = await browser.new_page()
         url=f'https://www.biletix.com/search/TURKIYE/tr?category_sb={category}&date_sb=thisweek&city_sb={city}#!category_sb:{category},city_sb:{city},date_sb:thisweek'
         try:
             await page.goto(url,timeout=0)
@@ -52,20 +52,16 @@ async def load_category(category, city, page):
             try:
                 load_more_btn=await page.query_selector("a.search_load_more")
                 #clicks the button until it disappears
-                # count=0
                 while await load_more_btn.is_visible():
                     await load_more_btn.click()
                 print("Category page is loaded")
             except:
                 print("Element not found or there is an another error")
-            # await page.close()
             return page
         except:
             print("Category could not be loaded. Url:",url)
-            # await page.close()
     
 async def load_page(link, page):
-        # page = await browser.new_page()
         try:
             await page.goto(link,timeout=0)
             try:
@@ -75,12 +71,9 @@ async def load_page(link, page):
             except:
                 print("No show more button")
             print("page is loaded")
-            # await page.close()
             return page
         except:
             print("Page could not be loaded. Link:" +link)
-            # await page.close()
-
 
 async def get_event_list(link, page):
     context= await load_page(link, page)
@@ -120,7 +113,7 @@ async def get_event_details(link, category, page):
     page= await load_page(link, page)
 
     heading = await page.inner_text("h1")
-    try:
+    """     try:
         place = await page.inner_text("a.venue-link.activated.ng-star-inserted span")
 
         # Geocoding an address
@@ -131,7 +124,8 @@ async def get_event_details(link, category, page):
         print("place:",place,"lat:",lat,"lng:",lng)
     except:
         print("place could not be found")
-        return []
+        return [] 
+    """
 
     try:
         time_elements = await page.query_selector_all("div.perf-date.ng-star-inserted span")
@@ -165,8 +159,8 @@ async def get_event_details(link, category, page):
         "start_date":getTime(start_date).strftime("%d-%m-%Y %H:%M"),
         "end_date":getTime(end_date).strftime("%d-%m-%Y %H:%M"),
         "media":[img],
-        "latitude":lat,
-        "longitude":lng,
+        #"latitude":lat,
+        #"longitude":lng,
         "category":category.lower()
     }]
 
@@ -174,7 +168,7 @@ async def main():
     async with async_playwright() as p:
         cur= datetime.now()
 
-        browser = await p.chromium.launch()
+        browser = await p.chromium.launch(headless=False)
         page = await browser.new_page()
 
         categories=["MUSIC","SPORT","ART","FAMILY","OTHER"]
