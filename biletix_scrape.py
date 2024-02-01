@@ -75,39 +75,46 @@ async def load_page(link, page):
         except:
             print("Page could not be loaded. Link:" +link)
 
-async def get_event_list(link, page):
+#instead of getting only the links, get all details from the list
+#group by name
+async def get_event_list_details(link, page):
     context= await load_page(link, page)
     context=await context.content()
     b_page=BeautifulSoup(context,"html.parser")
     events=b_page.findAll("btx-list-item",class_="ng-star-inserted")
-    event_links=[]
+    event_link_details=[]
     for event in events:
         still_sale=event.find("mat-basic-chip").text
         if still_sale=="Satışta":
             event_link=event.a["href"]
-            event_links.append("https://www.biletix.com"+event_link)
-    return event_links
+            event_link_details.append(await get_event_details("https://www.biletix.com"+event_link))
+    return event_link_details
 
-async def get_category_events(page, category="MUSIC", city="Ankara"):
+#make it get category event details
+#append to a list of details and return the list
+async def get_category_event_details(page, category="MUSIC", city="Ankara"):
     context= await load_category(category,city, page)
     context=await context.content()
     b_page=BeautifulSoup(context,"html.parser")
     events=b_page.findAll("div",class_="notliveevent")
 
-    event_links=[]
+    event_details=[]
     for event in events:
         if event.find("span",class_="ln2").text=="Satışta":
             event_link=event.a["href"]
             if event_link[0]=="/":
-               
                 if "grup" in event_link:
-                    event_links.extend(await get_event_list("https://www.biletix.com"+event_link, page))
+                    event_details.extend(await get_event_list_details("https://www.biletix.com"+event_link, page))
                 else:
-                    event_links.append("https://www.biletix.com"+event_link)
+                    event_details.append(await get_event_details("https://www.biletix.com"+event_link))
         else:
             print("not on sale")
-    return event_links
+    return event_details
 
+#get prices
+def get_prices(link):
+    #https://www.biletix.com/wbtxapi/api/v1/bxcached/event/getEventPerfProfiles/3LD43/001/INTERNET/tr      request url change 
+    pass
 async def get_event_details(link, category, page):
     print("Trying:",link)
     page= await load_page(link, page)
