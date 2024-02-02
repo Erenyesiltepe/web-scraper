@@ -30,8 +30,11 @@ def get_parsed(link,payload="",method="GET"):
      "User-Agent": random.choice(agents)
     }   
     response = requests.request(method, link, data=payload,  headers=headersList)
-    soup=BeautifulSoup(response.text,"lxml")
-    return soup
+    if response.status_code==200:
+        soup=BeautifulSoup(response.text,"lxml")
+        return soup
+    else:
+        return ""
 def get_event_links(event_type="tiyatro"):
     base_link="https://biletinial.com/tr-tr/"+event_type+"/"
     soup=get_parsed(base_link)
@@ -44,16 +47,23 @@ def get_event_links(event_type="tiyatro"):
              event_links=["https://biletinial.com"+a.get("href") for a in set(lists)]
     
     return event_links
-def get_prices(seance_id):
+def get_prices(seance_id,category):
     #create request
-    reqUrl = "https://biletinial.com/tr-tr/tiyatro/koltuk_secimi"
-    payload = f'seanceId={seance_id}&IsUser=1'
-    soup=get_parsed(reqUrl,payload,"POST")
+    reqUrl = f'https://biletinial.com/tr-tr/{category}/koltuk_secimi'
 
+    headersList = {
+     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+     "Content-Type": "application/x-www-form-urlencoded" 
+    }
+
+    payload = f"seanceId={seance_id}&IsUser=1"
+
+    response = requests.request("POST", reqUrl, data=payload,  headers=headersList)
+    soup=BeautifulSoup(response.text,"lxml")
     ticket_details=[]
     tickets=soup.select("div.yiyecek-oner__fiyat__adet")# no seats
     if len(tickets)==0:#no seats
-        tickets =soup.select(".prices .item")
+        tickets =soup.select(".prices")
         for ticket in tickets:
             type = ticket.find("small").text.strip()
             price = ticket.find("strong").text
@@ -138,7 +148,7 @@ def get_event_details(link,category):
                             "vendors":[
                                 {
                                     "name":"biletinial",
-                                    "prices":get_prices(seance_btn.get("data-title"))
+                                    "prices":get_prices(seance_btn.get("data-title"),category)
                                 }
                             ]
                         }
@@ -150,18 +160,18 @@ def get_event_details(link,category):
 
     return {
         **base,
-        "vendors":places
+        "places":places
     }   
 @calc_run_time
 def scrape_site():
-    categories=set(["etkinlikleri/stand-up","tiyatro","müzik","opera-bale","egitim","etkinlik"])
+    categories=set(["etkinlikleri/stand-up","tiyatro","muzik","opera-bale","egitim","etkinlik"])
     event_details=[]
     for cat in categories:
         event_links=get_event_links(cat)
         for event_link in event_links:
             event_details.append(get_event_details(event_link,cat))
 
-    print(event_details)
+    return event_details
 
 if __name__ == "__main__":
     scrape_site()

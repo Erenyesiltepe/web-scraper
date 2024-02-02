@@ -79,7 +79,7 @@ def get_event_prices(event_id):
 def get_event_details(id):
     reqUrl = f'https://www.biletix.com/wbtxapi/api/v1/bxcached/event/getEventDetail/{id}/INTERNET/tr'
     details=get_request(reqUrl)
-    
+    print(details["eventName"])
     if(details["firstPerformanceDate"]!=None and details["lastPerformanceDate"]):
         start = datetime.fromtimestamp(details["firstPerformanceDate"]/1000)
         end = datetime.fromtimestamp(details["lastPerformanceDate"]/1000)
@@ -134,7 +134,9 @@ def get_category_event_details(category="MUSIC",city="Ankara"):
     events_details=[]
     for id in category_ids:
         if len(id)==5:
-            events_details.append(get_event_details(id))
+            event=get_event_details(id)
+            if event != None:
+                events_details.append(event)
 
     return events_details
 
@@ -142,7 +144,8 @@ def scrape_site():
     categories=["MUSIC","SPORT","ART","FAMILY","OTHER"]
     events=[]
     for cat in categories:
-        events.append(get_category_event_details(cat))
+        events.extend(get_category_event_details(cat))
+        break
     return events
     
 if __name__ == "__main__":
