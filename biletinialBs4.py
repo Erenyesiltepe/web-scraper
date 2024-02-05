@@ -29,7 +29,7 @@ def get_parsed(link,payload="",method="GET"):
     "Accept": "*/*",
      "User-Agent": random.choice(agents)
     }   
-    response = requests.request(method, link, data=payload,  headers=headersList)
+    response = requests.request(method, link, data=payload,  headers=headersList, timeout=15)
     if response.status_code==200:
         soup=BeautifulSoup(response.text,"lxml")
         return soup

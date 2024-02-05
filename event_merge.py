@@ -10,15 +10,15 @@ def merge(merged,event):
         merged[name]=event
 
 if __name__=="__main__":
-    #biletixa=biletix()
+    biletixa=biletix()
     biletiniala=biletinial()
     
     merged={}
     
     for bilet in biletiniala:
         merge(merged,bilet)
-    """     for bilet in biletixa:
-        merge(merged,bilet) """
+    for bilet in biletixa:
+        merge(merged,bilet)
 
     merged_values=list(merged.values())
     with open("test4.json","w",encoding="UTF-8") as jsonfile:
