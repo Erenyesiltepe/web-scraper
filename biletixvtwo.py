@@ -1,8 +1,9 @@
-import requests
+import asyncio
+import httpx
 import json
 from datetime import datetime
 
-def get_request(url):
+async def get_request(client,url):
     cookies = {
     'BXID': 'AAAAAAVjmwzRPSkyJ56IiPcINbnNykU57unve+DpWIC2XOIJog==',
     'region': 'TURKIYE',
@@ -28,10 +29,10 @@ def get_request(url):
         'sec-ch-ua-mobile': '?0',
         'sec-ch-ua-platform': '"Windows"',
     }
-    response = requests.get(
+    parameters={"cookies":cookies,"headers":headers}
+    response = await client.get(
         url,
-        cookies=cookies,
-        headers=headers,
+        params=parameters
     )
     if response.status_code!=200:
         return
@@ -172,7 +173,14 @@ def scrape_site():
         events.extend(get_category_event_details(cat))
         break
     return events
-    
-if __name__ == "__main__":
-    #print(get_category_event_details())
-    print(scrape_site())
+
+async def main():
+    async with httpx.AsyncClient() as client:
+        tasks = []
+        tasks.append(get_request(client, "https://www.biletix.com/wbtxapi/api/v1/bxcached/event/getPerformanceList/3KY02/INTERNET/tr"))
+
+        characters = await asyncio.gather(*tasks)
+        print(characters)
+
+
+asyncio.run(main())
